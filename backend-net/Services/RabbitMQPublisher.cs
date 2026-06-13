@@ -5,9 +5,18 @@ namespace backend_net.Services
 {
     public class RabbitMQPublisher
     {
-       public async Task SendMessage(string message)
+        private readonly string _hostname;
+
+        // Ambil dari konfigurasi, default ke "localhost" jika jalan di laptop
+        public RabbitMQPublisher(IConfiguration configuration)
         {
-            var factory = new ConnectionFactory() { HostName = "rabbitmq" };
+            _hostname = configuration["RabbitMQHost"] ?? "localhost"; 
+        }
+
+        public async Task SendMessage(string message)
+        {
+            var factory = new ConnectionFactory() { HostName = _hostname };
+            // Lanjutan kode Anda...
             using var connection = await factory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
             

@@ -4,5 +4,6 @@ services:
     ports:
       - "5000:8080"
     volumes:
-      - ./backend-net/db-ai_bot.db:/app/db-ai_bot.db
+      # Kita buat folder 'db-data' di VPS yang terhubung ke folder '/app/Database' di Docker
+      - ./db-data:/app/Database
     restart: always

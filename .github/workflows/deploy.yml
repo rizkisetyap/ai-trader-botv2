@@ -51,6 +51,7 @@ jobs:
             BRANCH="${BRANCH:-main}"
             DEPLOY_DIR="${DEPLOY_DIR:-$HOME/ai-trader-bot}"
 
+            # Pastikan folder dan repositori sudah ada di VPS
             if [ ! -d "$DEPLOY_DIR/.git" ]; then
               rm -rf "$DEPLOY_DIR"
               git clone --branch "$BRANCH" "$REPO_URL" "$DEPLOY_DIR"
@@ -59,6 +60,15 @@ jobs:
             cd "$DEPLOY_DIR"
             git fetch origin "$BRANCH"
             git reset --hard "origin/$BRANCH"
+
+            # 1. Hapus folder siluman yang dibuat oleh Docker sebelumnya (jika ada)
+            rm -rf backend-net/db-ai_bot.db
+            
+            # 2. Buat folder untuk penyimpanan database dan beri izin tulis (Write)
+            mkdir -p db-data
+            chmod 777 db-data
+
+            # 3. Jalankan ulang Docker
             docker compose up -d --build
         env:
           REPO_URL: https://github.com/rizkisetyap/ai-trader-botv2.git

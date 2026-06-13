@@ -18,6 +18,16 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// --- TAMBAHKAN BLOK INI ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // Memastikan folder Database terbentuk dan tabel di-migrate otomatis
+    db.Database.EnsureCreated(); // Gunakan ini jika tidak pakai Migrations
+    // db.Database.Migrate();    // ATAU Gunakan ini jika Anda pakai dotnet ef migrations
+}
+// --------------------------
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
