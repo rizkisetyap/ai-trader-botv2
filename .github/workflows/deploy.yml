@@ -35,16 +35,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy VPS deploy script
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT }}
-          source: scripts/vps-deploy.sh
-          target: ~/ai-trader-bot-vps-deploy.sh
-
       - name: Run deploy script on VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -55,8 +45,21 @@ jobs:
           script_stop: true
           envs: REPO_URL,BRANCH,DEPLOY_DIR
           script: |
-            chmod +x ~/ai-trader-bot-vps-deploy.sh
-            ~/ai-trader-bot-vps-deploy.sh
+            set -euo pipefail
+
+            REPO_URL="${REPO_URL:-https://github.com/rizkisetyap/ai-trader-botv2.git}"
+            BRANCH="${BRANCH:-main}"
+            DEPLOY_DIR="${DEPLOY_DIR:-$HOME/ai-trader-bot}"
+
+            if [ ! -d "$DEPLOY_DIR/.git" ]; then
+              rm -rf "$DEPLOY_DIR"
+              git clone --branch "$BRANCH" "$REPO_URL" "$DEPLOY_DIR"
+            fi
+
+            cd "$DEPLOY_DIR"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+            docker compose up -d --build
         env:
           REPO_URL: https://github.com/rizkisetyap/ai-trader-botv2.git
           BRANCH: main
