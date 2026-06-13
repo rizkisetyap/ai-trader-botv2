@@ -1,9 +1,36 @@
+version: '3.8'
+
 services:
+  # Layanan 1: Backend .NET Core API
   api:
     build: ./backend-net
     ports:
       - "5000:8080"
     volumes:
-      # Kita buat folder 'db-data' di VPS yang terhubung ke folder '/app/Database' di Docker
       - ./db-data:/app/Database
     restart: always
+
+  # Layanan 2: Bot Telegram Interaktif (main.py)
+  bot-interactive:
+    build: ./worker-python
+    command: python main.py
+    restart: always
+    depends_on:
+      - api
+    env_file:
+      - ./worker-python/.env
+    environment:
+      # PENTING: Di dalam Docker, url target dialihkan ke nama service backend 'api' dan port internalnya '8080'
+      - BACKEND_API_URL=http://api:8080/api/v1/Saham/terima-analisa
+
+  # Layanan 3: Scheduler Analisa Harian (daily_worker.py)
+  bot-scheduler:
+    build: ./worker-python
+    command: python daily_worker.py
+    restart: always
+    depends_on:
+      - api
+    env_file:
+      - ./worker-python/.env
+    environment:
+      - BACKEND_API_URL=http://api:8080/api/v1/Saham/terima-analisa

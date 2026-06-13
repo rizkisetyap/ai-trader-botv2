@@ -1,4 +1,4 @@
-name: Deploy Backend API
+name: Deploy Api Trader Bot on VPS
 
 on:
   push:
@@ -43,7 +43,8 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
           script_stop: true
-          envs: REPO_URL,BRANCH,DEPLOY_DIR
+          # Menambahkan variabel rahasia ke envs agar bisa dibaca oleh skrip bash
+          envs: REPO_URL,BRANCH,DEPLOY_DIR,TELEGRAM_TOKEN,TELEGRAM_CHAT_ID,GEMINI_API_KEY
           script: |
             set -euo pipefail
 
@@ -68,9 +69,18 @@ jobs:
             mkdir -p db-data
             chmod 777 db-data
 
-            # 3. Jalankan ulang Docker
+            # 3. Buat file .env secara dinamis untuk worker-python (Aman dari Git)
+            echo "TELEGRAM_TOKEN=$TELEGRAM_TOKEN" > worker-python/.env
+            echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> worker-python/.env
+            echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> worker-python/.env
+
+            # 4. Jalankan ulang Docker Compose (Backend, Bot, dan Scheduler)
             docker compose up -d --build
         env:
           REPO_URL: https://github.com/rizkisetyap/ai-trader-botv2.git
           BRANCH: main
           DEPLOY_DIR: ${{ secrets.VPS_DEPLOY_DIR }}
+          # Menarik nilai rahasia dari GitHub Secrets ke GitHub Actions
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

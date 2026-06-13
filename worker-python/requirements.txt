@@ -1,0 +1,11 @@
+pyTelegramBotAPI
+requests
+numpy
+pandas
+yfinance
+pandas-ta
+scikit-learn
+google-generativeai
+python-dotenv
+joblib
+schedule

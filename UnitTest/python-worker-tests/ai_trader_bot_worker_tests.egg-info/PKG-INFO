@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: ai-trader-bot-worker-tests
+Version: 0.1.0
+Summary: Pytest scaffold for the Python worker
+Requires-Python: >=3.11
