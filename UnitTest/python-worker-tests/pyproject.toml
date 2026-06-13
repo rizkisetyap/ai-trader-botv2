@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-trader-bot-worker-tests"
+version = "0.1.0"
+description = "Pytest scaffold for the Python worker"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]

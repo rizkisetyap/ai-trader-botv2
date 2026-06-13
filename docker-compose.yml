@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  # 1. Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # Port aplikasi
+      - "15672:15672" # Dashboard admin RabbitMQ
+    restart: always
+
+  # 2. .NET API
+  api:
+    build: ./backend-net
+    ports:
+      - "5000:80"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    restart: always
+
+  # 3. Python AI Worker
+  worker:
+    build: ./worker-python
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    restart: always
+volumes:
+  database: ./data:/app/data
