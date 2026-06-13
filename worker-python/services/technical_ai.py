@@ -4,10 +4,19 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 import pandas_ta as ta
+import requests  # <-- 1. Pastikan requests di-import
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
+# --- 2. TAMBAHKAN BLOK TOPENG (USER-AGENT) INI ---
+sesi_browser = requests.Session()
+sesi_browser.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+})
+# -------------------------------------------------
 def analisa_teknikal(ticker_code):
+    # --- 3. SUNTIKKAN SESI KE DALAM TICKER ---
+    saham = yf.Ticker(ticker_code, session=sesi_browser)
     saham = yf.Ticker(ticker_code)
     df = saham.history(period="5y")
     
