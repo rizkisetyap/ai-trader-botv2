@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   # 1. Message Broker
   rabbitmq:
@@ -12,11 +11,13 @@ services:
   api:
     build: ./backend-net
     ports:
-      - "5000:80"
+      - "5000:8080"
     depends_on:
       - rabbitmq
     environment:
       - RABBITMQ_HOST=rabbitmq
+    volumes:
+      - ./backend-net/db-ai_bot.db:/app/db-ai_bot.db
     restart: always
 
   # 3. Python AI Worker
@@ -27,5 +28,3 @@ services:
     environment:
       - RABBITMQ_HOST=rabbitmq
     restart: always
-volumes:
-  database: ./data:/app/data
