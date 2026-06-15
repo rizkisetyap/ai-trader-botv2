@@ -27,7 +27,6 @@ sesi_browser.headers.update({
 def analisa_teknikal(ticker_code):
     # --- 3. SUNTIKKAN SESI KE DALAM TICKER ---
     saham = yf.Ticker(ticker_code, session=sesi_browser)
-    saham = yf.Ticker(ticker_code)
     df = saham.history(period="5y")
     
     if df.empty:
