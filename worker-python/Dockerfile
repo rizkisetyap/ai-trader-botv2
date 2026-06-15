@@ -1,7 +1,8 @@
 FROM python:3.12-slim
 
 WORKDIR /app
-
+# Tambahkan baris ini agar log langsung keluar
+ENV PYTHONUNBUFFERED=1
 # Instal dependensi sistem yang diperlukan untuk kompilasi scikit-learn & pandas
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
